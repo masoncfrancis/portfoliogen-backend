@@ -4,3 +4,4 @@ langchain-openai==0.0.8
 python-dotenv==1.0.1
 chromadb==0.4.24
 requests==2.31.0
+pypdf==4.0.2
