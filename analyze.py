@@ -38,3 +38,26 @@ listSkills = openAiClient.chat.completions.create(
 )
 
 print(listSkills.choices[0].message.content)
+
+projectFormatting = """
+<article class="rowproj">
+            <div class="project-wrapper__text">
+              <h3 class="project-wrapper__text-title">Project Title</h3>
+              <p class="project-wrapper__text-info">
+                description here
+              </p>
+
+            </div>
+
+          </article>
+"""
+
+listProjects = openAiClient.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[
+        {"role": "system", "content": "You are a resume analyzer bot. Output only the analyzed content. Do not add commentary of your own. Format output as HTML. The following is the content of the resume: \n" + docs[0].page_content},
+        {"role": "user", "content": "Create HTML for each project according to the formatting specified. The analysis for each individual project should be formatted as follows: \n" + projectFormatting}
+    ],
+)
+
+print(listProjects.choices[0].message.content)
