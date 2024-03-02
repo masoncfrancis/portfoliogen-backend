@@ -1,24 +1,13 @@
 import os
 import json
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
-from langchain_community.document_loaders import UnstructuredHTMLLoader
-from langchain_text_splitters import (
-    Language,
-    RecursiveCharacterTextSplitter,
-)
-from langchain.vectorstores.chroma import Chroma
+from langchain_community.vectorstores import FAISS
+from langchain_openai import OpenAIEmbeddings
 
 load_dotenv()
 
-llm = ChatOpenAI()
+faiss_index = FAISS.from_documents(pages, OpenAIEmbeddings())
+docs = faiss_index.similarity_search("How will the community be engaged?", k=2)
+for doc in docs:
+    print(str(doc.metadata["page"]) + ":", doc.page_content[:300])
 
-loader = UnstructuredHTMLLoader(os.getenv("LINKEDIN_PROFILE_URL"))
-docs = loader.load()
-
-htmlSplitter = RecursiveCharacterTextSplitter.from_language(
-    language=Language.HTML, chunk_size=60, chunk_overlap=0
-)
-htmlDocs = htmlSplitter.create_documents([docs])
-
-print(htmlDocs)
