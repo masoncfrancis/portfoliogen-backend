@@ -19,10 +19,13 @@ openAiClient = OpenAI()
 
 listJobs = openAiClient.chat.completions.create(
     model="gpt-3.5-turbo",
-    response_format={ "type": "json_object" },
+    response_format={"type": "json_object"},
     messages=[
-        {"role": "system", "content": "You are a resume analyzer bot. Output only the analyzed content. Do not add commentary of your own. Format output as JSON. The following is the content of the resume: \n" + docs[0].page_content},
-        {"role": "user", "content": "Make a list under json key 'jobs' and list each job using keys 'title', 'company', 'duration', and 'description'. The value of each key should be a string."}
+        {"role": "system",
+         "content": "You are a resume analyzer bot. Output only the analyzed content. Do not add commentary of your own. Format output as JSON. The following is the content of the resume: \n" +
+                    docs[0].page_content},
+        {"role": "user",
+         "content": "Make a list under json key 'jobs' and list each job using keys 'title', 'company', 'duration', and 'description'. The value of each key should be a string."}
     ],
 )
 
@@ -30,9 +33,11 @@ print(listJobs.choices[0].message.content)
 
 listSkills = openAiClient.chat.completions.create(
     model="gpt-3.5-turbo",
-    response_format={ "type": "json_object" },
+    response_format={"type": "json_object"},
     messages=[
-        {"role": "system", "content": "You are a resume analyzer bot. Output only the analyzed content. Do not add commentary of your own. Format output as JSON. The following is the content of the resume: \n" + docs[0].page_content},
+        {"role": "system",
+         "content": "You are a resume analyzer bot. Output only the analyzed content. Do not add commentary of your own. Format output as JSON. The following is the content of the resume: \n" +
+                    docs[0].page_content},
         {"role": "user", "content": "Make a list under json key 'skills' and list each skill as a string."}
     ],
 )
@@ -40,23 +45,25 @@ listSkills = openAiClient.chat.completions.create(
 print(listSkills.choices[0].message.content)
 
 projectFormatting = """
-<article class="rowproj">
+          <article class="rowproj">
             <div class="project-wrapper__text">
               <h3 class="project-wrapper__text-title">Project Title</h3>
+              <h4 class="project-wrapper__text-title">Company Name</h4>
               <p class="project-wrapper__text-info">
                 description here
               </p>
-
             </div>
-
           </article>
 """
 
 listProjects = openAiClient.chat.completions.create(
     model="gpt-3.5-turbo",
     messages=[
-        {"role": "system", "content": "You are a resume analyzer bot. Output only the analyzed content. Do not add commentary of your own. Format output as HTML. The following is the content of the resume: \n" + docs[0].page_content},
-        {"role": "user", "content": "Create HTML for each project according to the formatting specified. The analysis for each individual project should be formatted as follows: \n" + projectFormatting}
+        {"role": "system",
+         "content": "You are a resume analyzer bot. Output only the analyzed content. Do not add commentary of your own. Format output as HTML. Do not place quotation marks or annotations around the HTML. The following is the content of the resume: \n" +
+                    docs[0].page_content},
+        {"role": "user",
+         "content": "Create HTML for each project according to the formatting specified. The analysis for each individual project should be formatted as follows: \n" + projectFormatting}
     ],
 )
 
