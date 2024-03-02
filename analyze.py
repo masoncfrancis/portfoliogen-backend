@@ -1,13 +1,19 @@
 import os
 import json
 from dotenv import load_dotenv
-from langchain_community.vectorstores import FAISS
+from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
+from langchain_community.document_loaders import PyPDFLoader
 
 load_dotenv()
 
-faiss_index = FAISS.from_documents(pages, OpenAIEmbeddings())
-docs = faiss_index.similarity_search("How will the community be engaged?", k=2)
-for doc in docs:
-    print(str(doc.metadata["page"]) + ":", doc.page_content[:300])
+loader = PyPDFLoader("test.pdf")
+pages = loader.load_and_split()
+
+db = Chroma.from_documents(pages, OpenAIEmbeddings())
+
+query = "What skills do we have in this text?"
+docs = db.similarity_search(query)
+print(docs[0].page_content)
+
 
