@@ -6,7 +6,7 @@ from openai import OpenAI
 
 load_dotenv()
 
-loader = PyPDFLoader("test3.pdf")
+loader = PyPDFLoader("test2.pdf")
 pages = loader.load_and_split()
 
 db = Chroma.from_documents(pages, OpenAIEmbeddings())
@@ -25,7 +25,7 @@ aboutMe = openAiClient.chat.completions.create(
          "content": "You are a resume analyzer bot. Format output as JSON. The following is the content of the resume: \n" +
                     docs[0].page_content},
         {"role": "user",
-         "content": "Get an about me section for the user and return it under the key 'aboutMe'. The value of each key should be a string. If there is no personal statement available, make a generalized one based off of the resume content. Do not mention previous positions."}
+         "content": "Get the about me section for the user and return it under the key 'aboutMe'. The value should be a string. If there is an about me statement given, give it without changes. If there is no about me statement available, make a generalized one based off of the resume content. Do not mention previous work or volunteer experience."}
     ],
 )
 
@@ -92,7 +92,7 @@ listURLs = openAiClient.chat.completions.create(
          "content": "You are a resume analyzer bot. Format output as JSON. The following is the content of the resume: \n" +
                     docs[0].page_content},
         {"role": "user",
-         "content": "Check for URLS for LinkedIn and GitHub. For keys 'linkedin' and 'github' in the JSON, the applicable URL should be set as the value. If no URL is found, the value should be set to null."}
+         "content": "Check for URLS for LinkedIn and GitHub. For keys 'linkedin' and 'github' in the JSON, the applicable URL should be set as the value, and should be a fully formatted URL. If no URL is found, the value should be set to null."}
     ],
 )
 
