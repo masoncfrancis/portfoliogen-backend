@@ -17,6 +17,20 @@ print(docs[0].page_content)
 
 openAiClient = OpenAI()
 
+aboutMe = openAiClient.chat.completions.create(
+    model="gpt-3.5-turbo",
+    response_format={"type": "json_object"},
+    messages=[
+        {"role": "system",
+         "content": "You are a resume analyzer bot. Output only the analyzed content. Do not add commentary of your own. Format output as JSON. The following is the content of the resume: \n" +
+                    docs[0].page_content},
+        {"role": "user",
+         "content": "Get an about me section for the user and return it under the key 'aboutMe'. The value of each key should be a string."}
+    ],
+)
+
+print(aboutMe.choices[0].message.content)
+
 listJobs = openAiClient.chat.completions.create(
     model="gpt-3.5-turbo",
     response_format={"type": "json_object"},
@@ -69,3 +83,17 @@ listProjects = openAiClient.chat.completions.create(
 )
 
 print(listProjects.choices[0].message.content)
+
+listURLs = openAiClient.chat.completions.create(
+    model="gpt-3.5-turbo",
+    response_format={"type": "json_object"},
+    messages=[
+        {"role": "system",
+         "content": "You are a resume analyzer bot. Output only the analyzed content. Do not add commentary of your own. Format output as JSON. The following is the content of the resume: \n" +
+                    docs[0].page_content},
+        {"role": "user",
+         "content": "Check for URLS for LinkedIn and GitHub. For keys 'linkedin' and 'github' in the JSON, the applicable URL should be set as the value. If no URL is found, the value should be set to null."}
+    ],
+)
+
+print(listURLs.choices[0].message.content)
