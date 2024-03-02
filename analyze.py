@@ -58,12 +58,13 @@ projectFormatting = """
 
 listProjects = openAiClient.chat.completions.create(
     model="gpt-3.5-turbo",
+    response_format={"type": "json_object"},
     messages=[
         {"role": "system",
-         "content": "You are a resume analyzer bot. Output only the analyzed content. Do not add commentary of your own. Format output as HTML. Do not place quotation marks or annotations around the HTML. The following is the content of the resume: \n" +
+         "content": "You are a resume analyzer bot. Output only the analyzed content. Do not add commentary of your own. Format output as JSON. The following is the content of the resume: \n" +
                     docs[0].page_content},
         {"role": "user",
-         "content": "Create HTML for each project according to the formatting specified. The analysis for each individual project should be formatted as follows: \n" + projectFormatting}
+         "content": "Make a list under json key 'projects' and list each project using keys 'title', 'company', and 'description'. The value of each key should be a string."}
     ],
 )
 
