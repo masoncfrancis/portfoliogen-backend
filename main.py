@@ -15,27 +15,37 @@ app = Flask(__name__)
 @app.route('/')
 def index():
 
-    file = request.files['resumeFile']
-
-    if file:
-        # Create a temporary directory
-        temp_dir = tempfile.mkdtemp()
-
-        # Save the uploaded file to the temporary directory
-        tempFilePath = os.path.join(temp_dir, file.filename)
-        file.save(tempFilePath)
+    # file = request.files['resumeFile']
+    #
+    # #if file:
+    # if True:
+    #     # Create a temporary directory
+    #     temp_dir = tempfile.mkdtemp()
+    #
+    #     # Save the uploaded file to the temporary directory
+    #     tempFilePath = os.path.join(temp_dir, file.filename)
+    #     file.save(tempFilePath)
+    if True:
 
         # Process the file if needed
         # For demonstration, let's just print the temporary file path
 
+        tempFilePath = "test2.pdf"
 
         zipBuffer = zipfile.ZipFile('site.zip', 'w', zipfile.ZIP_DEFLATED)
 
         # Modify the 'index.html' content as needed
         generatedIndexFile = generateIndexFile(tempFilePath)
 
+        tempIndexDir = tempfile.mkdtemp()
+        tempIndexFilePath = os.path.join(tempIndexDir, 'index.html')
+        with open(tempIndexFilePath, 'w') as f:
+            f.write(generatedIndexFile)
+
+
+
         # Add the modified 'index.html' content to the ZIP archive
-        zipBuffer.writestr('index.html', generatedIndexFile)
+        zipBuffer.write(tempIndexFilePath, 'index.html')
 
         # Walk through the 'template' directory and add all other files and directories
         for root, dirs, files in os.walk('template'):
@@ -63,9 +73,26 @@ def generateIndexFile(resumeFile):
 
     query = " "
     docs = db.similarity_search(query)
-    print(docs[0].page_content)
 
     openAiClient = OpenAI()
+
+    # name
+
+    nameResponse = openAiClient.chat.completions.create(
+        model="gpt-3.5-turbo",
+        response_format={"type": "json_object"},
+        messages=[
+            {"role": "system",
+             "content": "You are a resume analyzer bot. Format output as JSON. The following is the content of the resume: \n" +
+                        docs[0].page_content},
+            {"role": "user",
+             "content": "Get the name of the user and return it under the key 'name'. The value should be a string. "}
+        ],
+    )
+
+    nameJson = json.loads(nameResponse.choices[0].message.content)
+    indexContent = indexContent.replace("{{name}}", nameJson['name'])
+
 
     # about me section
     aboutMeResponse = openAiClient.chat.completions.create(
@@ -115,12 +142,86 @@ def generateIndexFile(resumeFile):
         """
         jobsHtml += jobHtmlTemplate.replace("Project Title", job['title']).replace("Company Name", job['company']).replace("description here", job['description'])
 
-    indexContent = indexContent.replace("{{jobs}}", jobsHtml)
+    indexContent = indexContent.replace("{{experiencehtml}}", jobsHtml)
 
     # list skills
-    skillsTemplate = "<h1 class=\"dark-blue-text\">type</h1>"
+
     skillsHtml = """"""
 
+    listSkills = openAiClient.chat.completions.create(
+        model="gpt-3.5-turbo",
+        response_format={"type": "json_object"},
+        messages=[
+            {"role": "system",
+             "content": "You are a resume analyzer bot. Format output as JSON. The following is the content of the resume: \n" +
+                        docs[0].page_content},
+            {"role": "user", "content": "Make a list under json key 'skills' and list each skill as a string."}
+        ],
+    )
+
+    listSkillsJson = json.loads(listSkills.choices[0].message.content)
+    for skill in listSkillsJson['skills']:
+        skillsTemplate = "<h1 class=\"dark-blue-text\">type</h1>"
+        skillsHtml += skillsTemplate.replace("type", skill)
+
+    indexContent = indexContent.replace("{{skillshtml}}", skillsHtml)
+
+
+    # list projects
+
+    projectsHtml = """"""
+
+    listProjects = openAiClient.chat.completions.create(
+        model="gpt-3.5-turbo",
+        response_format={"type": "json_object"},
+        messages=[
+            {"role": "system",
+             "content": "You are a resume analyzer bot. Format output as JSON. The following is the content of the resume: \n" +
+                        docs[0].page_content},
+            {"role": "user",
+             "content": "Make a list under json key 'projects' and list each project using keys 'title', 'company', and 'description'. The value of each key should be a string."}
+        ],
+    )
+
+    listProjectsJson = json.loads(listProjects.choices[0].message.content)
+    for project in listProjectsJson['projects']:
+        projectHtmlTemplate = """
+               <article class="rowproj">
+                <div class="project-wrapper__text">
+                  <h3 class="project-wrapper__text-title">Project Title</h3>
+                  <h4 class="project-wrapper__text-title">Company Name</h4>
+                  <p class="project-wrapper__text-info">
+                    description here
+                  </p>
+                </div>
+              </article>
+        """
+        projectsHtml += projectHtmlTemplate.replace("Project Title", project['title']).replace("Company Name", project['company']).replace("description here", project['description'])
+
+    indexContent = indexContent.replace("{{projecthtml}}", projectsHtml)
+
+    # put urls
+    listURLs = openAiClient.chat.completions.create(
+        model="gpt-3.5-turbo",
+        response_format={"type": "json_object"},
+        messages=[
+            {"role": "system",
+             "content": "You are a resume analyzer bot. Format output as JSON. The following is the content of the resume: \n" +
+                        docs[0].page_content},
+            {"role": "user",
+             "content": "Check for URLS for LinkedIn and GitHub. For keys 'linkedin' and 'github' in the JSON, the applicable URL should be set as the value, and should be a fully formatted URL. If no URL is found, the value should be set to null."}
+        ],
+    )
+
+    listURLsJson = json.loads(listURLs.choices[0].message.content)
+    if listURLsJson['linkedin'] == None:
+        listURLsJson['linkedin'] = ""
+    if listURLsJson['github'] == None:
+        listURLsJson['github'] = ""
+    indexContent = indexContent.replace("{{linkedinurl}}", listURLsJson['linkedin'])
+    indexContent = indexContent.replace("{{githuburl}}", listURLsJson['github'])
+
+    return indexContent
 
 
 
