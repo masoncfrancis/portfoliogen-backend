@@ -12,7 +12,7 @@ from openai import OpenAI
 app = Flask(__name__)
 
 
-@app.route('/')
+@app.route('/', methods=['POST'])
 def index():
 
     file = request.files['resumeFile']
@@ -81,7 +81,7 @@ def generateIndexFile(resumeFile):
              "content": "You are a resume analyzer bot. Format output as JSON. The following is the content of the resume: \n" +
                         docs[0].page_content},
             {"role": "user",
-             "content": "Get the name of the user and return it under the key 'name'. The value should be a string. "}
+             "content": "Get the person's name from the resume and return it under the key 'name'. The value should be a string. "}
         ],
     )
 
