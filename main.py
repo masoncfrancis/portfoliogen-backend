@@ -15,22 +15,17 @@ app = Flask(__name__)
 @app.route('/')
 def index():
 
-    # file = request.files['resumeFile']
-    #
-    # #if file:
-    # if True:
-    #     # Create a temporary directory
-    #     temp_dir = tempfile.mkdtemp()
-    #
-    #     # Save the uploaded file to the temporary directory
-    #     tempFilePath = os.path.join(temp_dir, file.filename)
-    #     file.save(tempFilePath)
-    if True:
+    file = request.files['resumeFile']
 
-        # Process the file if needed
-        # For demonstration, let's just print the temporary file path
+    if file:
+        # Create a temporary directory
+        temp_dir = tempfile.mkdtemp()
 
-        tempFilePath = "test2.pdf"
+        # Save the uploaded file to the temporary directory
+        tempFilePath = os.path.join(temp_dir, file.filename)
+        file.save(tempFilePath)
+
+
 
         zipBuffer = zipfile.ZipFile('site.zip', 'w', zipfile.ZIP_DEFLATED)
 
