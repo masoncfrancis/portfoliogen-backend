@@ -22,7 +22,7 @@ listJobs = openAiClient.chat.completions.create(
     response_format={ "type": "json_object" },
     messages=[
         {"role": "system", "content": "You are a resume analyzer bot. Output only the analyzed content. Do not add commentary of your own. Format output as JSON. The following is the content of the resume: \n" + docs[0].page_content},
-        {"role": "user", "content": "Please list jobs and a description of what I did in each job. Make a list under json key 'jobs' and list each job using keys 'title', 'company', 'duration', and 'description'. The value of each key should be a string."}
+        {"role": "user", "content": "Make a list under json key 'jobs' and list each job using keys 'title', 'company', 'duration', and 'description'. The value of each key should be a string."}
     ],
 )
 
@@ -33,7 +33,7 @@ listSkills = openAiClient.chat.completions.create(
     response_format={ "type": "json_object" },
     messages=[
         {"role": "system", "content": "You are a resume analyzer bot. Output only the analyzed content. Do not add commentary of your own. Format output as JSON. The following is the content of the resume: \n" + docs[0].page_content},
-        {"role": "user", "content": "Please list my skills. Make a list under json key 'skills' and list each skill as a string."}
+        {"role": "user", "content": "Make a list under json key 'skills' and list each skill as a string."}
     ],
 )
 
