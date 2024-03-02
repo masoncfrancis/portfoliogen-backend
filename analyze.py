@@ -11,8 +11,9 @@ pages = loader.load_and_split()
 
 db = Chroma.from_documents(pages, OpenAIEmbeddings())
 
-query = "What skills do we have in this text?"
+query = " "
 docs = db.similarity_search(query)
+print(docs[0].page_content)
 
 openAiClient = OpenAI()
 
