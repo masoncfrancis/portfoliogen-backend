@@ -6,7 +6,7 @@ from openai import OpenAI
 
 load_dotenv()
 
-loader = PyPDFLoader("test.pdf")
+loader = PyPDFLoader("test3.pdf")
 pages = loader.load_and_split()
 
 db = Chroma.from_documents(pages, OpenAIEmbeddings())
@@ -22,10 +22,10 @@ aboutMe = openAiClient.chat.completions.create(
     response_format={"type": "json_object"},
     messages=[
         {"role": "system",
-         "content": "You are a resume analyzer bot. Output only the analyzed content. Do not add commentary of your own. Format output as JSON. The following is the content of the resume: \n" +
+         "content": "You are a resume analyzer bot. Format output as JSON. The following is the content of the resume: \n" +
                     docs[0].page_content},
         {"role": "user",
-         "content": "Get an about me section for the user and return it under the key 'aboutMe'. The value of each key should be a string."}
+         "content": "Get an about me section for the user and return it under the key 'aboutMe'. The value of each key should be a string. If there is no personal statement available, make a generalized one based off of the resume content. Do not mention previous positions."}
     ],
 )
 
@@ -36,7 +36,7 @@ listJobs = openAiClient.chat.completions.create(
     response_format={"type": "json_object"},
     messages=[
         {"role": "system",
-         "content": "You are a resume analyzer bot. Output only the analyzed content. Do not add commentary of your own. Format output as JSON. The following is the content of the resume: \n" +
+         "content": "You are a resume analyzer bot. Format output as JSON. The following is the content of the resume: \n" +
                     docs[0].page_content},
         {"role": "user",
          "content": "Make a list under json key 'jobs' and list each job using keys 'title', 'company', 'duration', and 'description'. The value of each key should be a string."}
@@ -50,7 +50,7 @@ listSkills = openAiClient.chat.completions.create(
     response_format={"type": "json_object"},
     messages=[
         {"role": "system",
-         "content": "You are a resume analyzer bot. Output only the analyzed content. Do not add commentary of your own. Format output as JSON. The following is the content of the resume: \n" +
+         "content": "You are a resume analyzer bot. Format output as JSON. The following is the content of the resume: \n" +
                     docs[0].page_content},
         {"role": "user", "content": "Make a list under json key 'skills' and list each skill as a string."}
     ],
@@ -75,7 +75,7 @@ listProjects = openAiClient.chat.completions.create(
     response_format={"type": "json_object"},
     messages=[
         {"role": "system",
-         "content": "You are a resume analyzer bot. Output only the analyzed content. Do not add commentary of your own. Format output as JSON. The following is the content of the resume: \n" +
+         "content": "You are a resume analyzer bot. Format output as JSON. The following is the content of the resume: \n" +
                     docs[0].page_content},
         {"role": "user",
          "content": "Make a list under json key 'projects' and list each project using keys 'title', 'company', and 'description'. The value of each key should be a string."}
@@ -89,7 +89,7 @@ listURLs = openAiClient.chat.completions.create(
     response_format={"type": "json_object"},
     messages=[
         {"role": "system",
-         "content": "You are a resume analyzer bot. Output only the analyzed content. Do not add commentary of your own. Format output as JSON. The following is the content of the resume: \n" +
+         "content": "You are a resume analyzer bot. Format output as JSON. The following is the content of the resume: \n" +
                     docs[0].page_content},
         {"role": "user",
          "content": "Check for URLS for LinkedIn and GitHub. For keys 'linkedin' and 'github' in the JSON, the applicable URL should be set as the value. If no URL is found, the value should be set to null."}
