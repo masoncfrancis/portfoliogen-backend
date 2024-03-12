@@ -35,8 +35,6 @@ def index():
         with open(tempIndexFilePath, 'w') as f:
             f.write(generatedIndexFile)
 
-
-
         # Add the modified 'index.html' content to the ZIP archive
         zipBuffer.write(tempIndexFilePath, 'index.html')
 
@@ -45,7 +43,8 @@ def index():
             for file in files:
                 if file != 'index.html':
                     file_path = os.path.join(root, file)
-                    zipBuffer.write(file_path, os.path.relpath(file_path, 'template'))
+                    zipBuffer.write(file_path, os.path.relpath(
+                        file_path, 'template'))
         zipBuffer.close()
         return send_file('site.zip', as_attachment=True)
 
@@ -85,7 +84,6 @@ def generateIndexFile(resumeFile):
 
     nameJson = json.loads(nameResponse.choices[0].message.content)
     indexContent = indexContent.replace("{{name}}", nameJson['name'])
-
 
     # about me section
     aboutMeResponse = openAiClient.chat.completions.create(
@@ -133,7 +131,8 @@ def generateIndexFile(resumeFile):
                 </div>
               </article>
         """
-        jobsHtml += jobHtmlTemplate.replace("Project Title", job['title']).replace("Company Name", job['company']).replace("description here", job['description'])
+        jobsHtml += jobHtmlTemplate.replace("Project Title", job['title']).replace(
+            "Company Name", job['company']).replace("description here", job['description'])
 
     indexContent = indexContent.replace("{{experiencehtml}}", jobsHtml)
 
@@ -158,7 +157,6 @@ def generateIndexFile(resumeFile):
         skillsHtml += skillsTemplate.replace("type", skill)
 
     indexContent = indexContent.replace("{{skillshtml}}", skillsHtml)
-
 
     # list projects
 
@@ -189,7 +187,8 @@ def generateIndexFile(resumeFile):
                 </div>
               </article>
         """
-        projectsHtml += projectHtmlTemplate.replace("Project Title", project['title']).replace("Company Name", project['company']).replace("description here", project['description'])
+        projectsHtml += projectHtmlTemplate.replace("Project Title", project['title']).replace(
+            "Company Name", project['company']).replace("description here", project['description'])
 
     indexContent = indexContent.replace("{{projecthtml}}", projectsHtml)
 
@@ -211,11 +210,12 @@ def generateIndexFile(resumeFile):
         listURLsJson['linkedin'] = ""
     if listURLsJson['github'] == None:
         listURLsJson['github'] = ""
-    indexContent = indexContent.replace("{{linkedinurl}}", listURLsJson['linkedin'])
-    indexContent = indexContent.replace("{{githuburl}}", listURLsJson['github'])
+    indexContent = indexContent.replace(
+        "{{linkedinurl}}", listURLsJson['linkedin'])
+    indexContent = indexContent.replace(
+        "{{githuburl}}", listURLsJson['github'])
 
     return indexContent
-
 
 
 if __name__ == '__main__':
