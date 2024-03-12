@@ -25,8 +25,6 @@ def index():
         tempFilePath = os.path.join(temp_dir, file.filename)
         file.save(tempFilePath)
 
-
-
         zipBuffer = zipfile.ZipFile('site.zip', 'w', zipfile.ZIP_DEFLATED)
 
         # Modify the 'index.html' content as needed
